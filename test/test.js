@@ -30,7 +30,7 @@ describe('expect-called', function(){
                 expectCalled.control(emptyObject,'fn');
             }).to.throwError('/function fn does not exists in the object/');
         });
-        it('should call controled function', function(){
+        it('should call controled global function', function(){
             var control=expectCalled.control(theGlobalFunctionContainer,'globalFunction');
             var x={};
             var y=43;
@@ -61,6 +61,30 @@ describe('expect-called', function(){
             // control remains unchanged
             expect(control).to.eql(expected);
         });
+        it('should call controled local function', function(){
+            var count=0;
+            var localObject={
+                member:function(x){ count++; return x+1; }
+            }
+            var originalFunction=localObject.member;
+            var control=expectCalled.control(localObject,'member');
+            var returned=localObject.member(7);
+            expect(count).to.eql(1);
+            expect(returned).to.eql(8);
+            var expected={
+                calls: [{This: localObject, args: [7]}],
+                This: localObject,
+                functionName: 'member',
+                originalFunction: originalFunction,
+                stopControl: expectCalled.stopControl
+            };
+            expect(control).to.eql(expected);
+            control.stopControl();
+            expect(localObject.member).to.be(originalFunction);
+            var anotherCall=localObject.member(7);
+            // control remains unchanged
+            expect(control).to.eql(expected);
+        });
         it('should not change the function arity', function(){
             var localObject={
                 memberFunction:function(x,y,z){
@@ -85,5 +109,10 @@ describe('expect-called', function(){
             expect(localObject.memberFunction.length).to.eql(0);
             control.stopControl();
         });
+    });
+    describe('SYMBOLS',function(){
+        it('could not call expectCalled.global',function(){
+            expect(expectCalled.global).to.throwError(/This is not a real function, this is a SYMBOL/);
+        });            
     });
 });

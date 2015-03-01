@@ -13,7 +13,7 @@ var ec={
 
 ec.globalObject = function(){ return this; }();
 
-ec.global = function(){ return this.globalObject; };
+ec.global = function(){ throw Error('This is not a real function, this is a SYMBOL'); };
 
 ec.control = function control(object, functionName){
     if(!(functionName in object)){
@@ -33,17 +33,14 @@ ec.control = function control(object, functionName){
         });
         return theOldFunction.apply(this,arguments);
     };
-    var theControledFunction;
-    switch(theOldFunction.length){
-        case 0: theControledFunction=theControledFunction0; break;
-        case 1: theControledFunction=function(a){ return theControledFunction0.apply(this,arguments); }; break;
-        case 2: theControledFunction=function(a,b){ return theControledFunction0.apply(this,arguments); }; break;
-        case 3: theControledFunction=function(a,b,c){ return theControledFunction0.apply(this,arguments); }; break;
-        case 4: theControledFunction=function(a,b,c,d){ return theControledFunction0.apply(this,arguments); }; break;
-        case 5: theControledFunction=function(a,b,c,d,e){ return theControledFunction0.apply(this,arguments); }; break;
-        case 6: theControledFunction=function(a,b,c,d,e,f){ return theControledFunction0.apply(this,arguments); }; break;
-        default: throw new Error('not implemented control for function with arity greater than 6');
+    var parameterList=[];
+    for(var i=0; i<theOldFunction.length; i++){
+        parameterList.push('x'+i);
     }
+    var functionExpresion="(function "+functionName+
+        "("+parameterList.join(',')+")"+
+        "{ return theControledFunction0.apply(this,arguments); })";
+    var theControledFunction=eval(functionExpresion);
     object[functionName]=theControledFunction;
     return theControl;
 };
