@@ -57,6 +57,9 @@ describe('expect-called', function(){
             expect(control).to.eql(expected);
             control.stopControl();
             expect(globalFunction).to.be(theGlobalFunction);
+            var anotherCall=globalFunction(6,7);
+            // control remains unchanged
+            expect(control).to.eql(expected);
         });
     });
 });
