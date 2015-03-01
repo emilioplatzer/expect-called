@@ -24,7 +24,7 @@ function myUpper(x){
     return x.substring(0,1).toUpperCase()+x.substring(1);
 }
 
-var calls=expectCalled.control(this,'myUpper');
+var control = expectCalled.control(this,'myUpper');
 
 function myCammel(normalPhrase){
     // to do
@@ -38,14 +38,14 @@ var camelPhrase = myCammel
 
 expect(camelPhrase).to.eql('ThisIsMyCamel');
 
-expect(calls).to.eql([
-    {This:this,args:['this']},
-    {This:this,args:['is']},
-    {This:this,args:['my']},
-    {This:this,args:['camel']}
+expect(control.calls).to.eql([
+    {This:this, args:['this']},
+    {This:this, args:['is']},
+    {This:this, args:['my']},
+    {This:this, args:['camel']}
 ]);
 
-calls.stopControl();
+control.stopControl();
 ```
 
 ## License

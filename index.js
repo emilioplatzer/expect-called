@@ -8,6 +8,15 @@
  * Module dependencies.
  */
 
-exports = module.exports = function expectCalled(){
-    throw new Error("Not implemented yet!");
+var ec={
+};
+
+ec.control = function control(object, functionName){
+    return {
+        stopControl: function stopControl(object, functionName){
+            return null;
+        }
+    };
 }
+ 
+exports = module.exports = ec;
