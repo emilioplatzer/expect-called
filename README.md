@@ -31,7 +31,11 @@ Each call generates a object with two properties `{This: ..., args: [... ]}`
 
 ### control.stopControl()
 
-Stops the control function 
+Stops the control function. 
+
+### expectedCalled.global
+
+SYMBOL that represents the root object in `control.call`
 
 ## Example
 
