@@ -1,11 +1,12 @@
 # expect-called
-Put data into tables
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Linux Build][travis-image]][travis-url]
 [![Windows Build][appveyor-image]][appveyor-url]
 [![Test Coverage][coveralls-image]][coveralls-url]
+
+If you want to verify that a function was called in the way you expect. 
 
 ## Install
 
@@ -15,38 +16,62 @@ $ npm install expect-called
 
 ## API
 
+### expectedCalled.control(object, functionName)
+
+Creates a function wrapper for object[functionName], 
+the wrapper function will register de parameters used to call the function (included *this*) 
+and then calls de original function and returns the returned value.
+
+Returns a control object
+
+### control.call
+
+Is the array property that contains each call to the function. 
+Each call generates a object with two properties `{This: ..., args: [... ]}`
+
+### control.stopControl()
+
+Stops the control function 
+
+## Example
+
 ```js
-var expect = require('expect');
+var expect = require('expect.js'); // needed for the example
 
 var expectCalled = require('expect-called');
 
-function myUpper(x){
-    return x.substring(0,1).toUpperCase()+x.substring(1);
+var myModule={
+    upper:function(word){
+        return word.substring(0,1).toUpperCase()+word.substring(1);
+    },
+    cammel:function(phrase){
+        // function to TEST and to CONTROL
+        // must call upper
+    }
 }
 
-var control = expectCalled.control(this,'myUpper');
-
-function myCammel(normalPhrase){
-    // to do
-    // and to control
-    // must call myUpper
-}
-
-var phrase = 'this is my camel';
-
-var camelPhrase = myCammel
-
-expect(camelPhrase).to.eql('ThisIsMyCamel');
-
-expect(control.calls).to.eql([
-    {This:this, args:['this']},
-    {This:this, args:['is']},
-    {This:this, args:['my']},
-    {This:this, args:['camel']}
-]);
-
-control.stopControl();
+describe('this test',function(){
+  it('should call intermediate function',function(){
+    var control = expectCalled.control(myModule,'upper');
+    var phrase = 'this is my camel';
+    var camelPhrase = myModule.cammel(phrase);
+    expect(camelPhrase).to.eql('ThisIsMyCamel');
+    expect(control.calls).to.eql([
+        {This:myModule, args:['this']},
+        {This:myModule, args:['is']},
+        {This:myModule, args:['my']},
+        {This:myModule, args:['camel']}
+    ]);
+    control.stopControl();
+  });
+});
 ```
+
+## Notes
+ * Not tested in prototype functions
+ * Not usefull for local functions that do not belong to a object
+ * Not control de returned value
+ * Call to control with the same function name twice without stopping the previous control could generate unexpected results. 
 
 ## License
 
