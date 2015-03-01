@@ -73,5 +73,17 @@ describe('expect-called', function(){
             expect(finalArity).to.eql(initialArity);
             control.stopControl();
         });
+        it('should not change the function name', function(){
+            var localObject={
+                memberFunction:function(){
+                    return x+y+z;
+                }
+            };
+            var control=expectCalled.control(localObject,'memberFunction');
+            var finalArity=localObject.memberFunction.length;
+            expect(localObject.memberFunction.name).to.eql('memberFunction');
+            expect(localObject.memberFunction.length).to.eql(0);
+            control.stopControl();
+        });
     });
 });
