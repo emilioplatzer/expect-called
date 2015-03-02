@@ -72,7 +72,6 @@ describe('this test',function(){
 ```
 
 ## Notes
- * Not tested in prototype functions
  * Not usefull for local functions that do not belong to a object
  * Not control de returned value
  * Call to control with the same function name twice without stopping the previous control could generate unexpected results. 

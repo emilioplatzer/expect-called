@@ -1,7 +1,7 @@
 {
   "name": "expect-called",
   "description": "for control expected calls to any function in test suites",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": "Emilio Platzer <emilioplatzer@gmail.com>",
   "license": "MIT",
   "repository": "emilioplatzer/expect-called",

@@ -126,23 +126,38 @@ describe('expect-called', function(){
         });
     });
     describe('prototype functions', function(){
-        it('should control directly in de prototype',function(){
-            function TheClass(){
-            };
+        function TheClass(){
+        };
+        var originalFunction;
+        beforeEach(function(){
             TheClass.prototype.duplicate=function(t){ return t+','+t; }
-            var originalFunction=TheClass.prototype.duplicate;
-            var control=expectCalled.control(TheClass.prototype,'duplicate',{withThis:true});
-            var o=new TheClass();
+            originalFunction=TheClass.prototype.duplicate;
+        });
+        function controlCall(o,control, container){
             var ret=o.duplicate('a');
             var expected={
                 calls: [{This: o, args:['a']}],
-                container: TheClass.prototype,
+                container: container,
                 functionName: 'duplicate',
                 originalFunction: originalFunction,
                 stopControl: expectCalled.stopControl
             };
             expect(control).to.eql(expected);
+        }
+        it('should control directly in de prototype',function(){
+            var control=expectCalled.control(TheClass.prototype,'duplicate',{withThis:true});
+            var o=new TheClass();
+            controlCall(o,control,TheClass.prototype);
             control.stopControl();
+            expect(TheClass.prototype.duplicate).to.eql(originalFunction);
+            expect(o.duplicate).to.eql(originalFunction);
+        });
+        it('should control for one instance only',function(){
+            var o=new TheClass();
+            var control=expectCalled.control(o,'duplicate',{withThis:true});
+            controlCall(o,control,o);
+            control.stopControl();
+            expect(o.duplicate).to.eql(originalFunction);
         });
     });
     describe('SYMBOLS',function(){

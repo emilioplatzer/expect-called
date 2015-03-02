@@ -30,8 +30,9 @@ ec.control = function control(object, functionName, opts){
         stopControl: this.stopControl
     };
     var theControledFunction0 = function(){
-        var node={args:Array.prototype.slice.call(arguments)};
+        var node={};
         if(opts.withThis) node.This=this===ec.globalObject?ec.global:this;
+        node.args=Array.prototype.slice.call(arguments);
         theControl.calls.push(onlyArgs?node.args:node);
         return theOldFunction.apply(this,arguments);
     };
