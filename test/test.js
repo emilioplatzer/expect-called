@@ -24,6 +24,14 @@ var theGlobalFunctionContainer=theGlobal;
 
 describe('expect-called', function(){
     describe('basic test', function(){
+        var localObject;
+        beforeEach(function(){
+            localObject={
+                memberFunction:function(x,y,z){
+                    return x+y+z;
+                }
+            };
+        });
         it('should control that function exists',function(){
             var emptyObject={};
             expect(function(){
@@ -31,7 +39,7 @@ describe('expect-called', function(){
             }).to.throwError('/function fn does not exists in the object/');
         });
         it('should call controled global function', function(){
-            var control=expectCalled.control(theGlobalFunctionContainer,'globalFunction');
+            var control=expectCalled.control(theGlobalFunctionContainer,'globalFunction',{withThis:true});
             var x={};
             var y=43;
             var returned=globalFunction(x,y);
@@ -67,7 +75,7 @@ describe('expect-called', function(){
                 member:function(x){ count++; return x+1; }
             }
             var originalFunction=localObject.member;
-            var control=expectCalled.control(localObject,'member');
+            var control=expectCalled.control(localObject,'member',{withThis:true});
             var returned=localObject.member(7);
             expect(count).to.eql(1);
             expect(returned).to.eql(8);
@@ -86,11 +94,6 @@ describe('expect-called', function(){
             expect(control).to.eql(expected);
         });
         it('should not change the function arity', function(){
-            var localObject={
-                memberFunction:function(x,y,z){
-                    return x+y+z;
-                }
-            };
             var initialArity=localObject.memberFunction.length;
             var control=expectCalled.control(localObject,'memberFunction');
             var finalArity=localObject.memberFunction.length;
@@ -98,15 +101,27 @@ describe('expect-called', function(){
             control.stopControl();
         });
         it('should not change the function name', function(){
-            var localObject={
-                memberFunction:function(){
-                    return x+y+z;
-                }
-            };
+            localObject.memberFunction=function otherName(){ return null; };
+            var originalFunction=localObject.memberFunction;
             var control=expectCalled.control(localObject,'memberFunction');
             var finalArity=localObject.memberFunction.length;
-            expect(localObject.memberFunction.name).to.eql('memberFunction');
+            expect(localObject.memberFunction.name).to.eql(originalFunction.name);
             expect(localObject.memberFunction.length).to.eql(0);
+            control.stopControl();
+        });
+        it('should not include This in calls if not specified in options',function(){
+            var originalFunction=localObject.memberFunction;
+            var control=expectCalled.control(localObject,'memberFunction');
+            localObject.memberFunction(7);
+            localObject.memberFunction(3,4,5);
+            var expected={
+                calls: [[7],[3,4,5]],
+                This: localObject,
+                functionName: 'memberFunction',
+                originalFunction: originalFunction,
+                stopControl: expectCalled.stopControl
+            };
+            expect(control).to.eql(expected);
             control.stopControl();
         });
     });

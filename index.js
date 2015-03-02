@@ -15,7 +15,9 @@ ec.globalObject = function(){ return this; }();
 
 ec.global = function(){ throw Error('This is not a real function, this is a SYMBOL'); };
 
-ec.control = function control(object, functionName){
+ec.control = function control(object, functionName, opts){
+    opts=opts||{};
+    var onlyArgs=!opts.withThis;
     if(!(functionName in object)){
         throw new Error('expect-called.control: function '+functionName+' does not exists in the object');
     }
@@ -28,16 +30,16 @@ ec.control = function control(object, functionName){
         stopControl: this.stopControl
     };
     var theControledFunction0 = function(){
-        theControl.calls.push({
-            This:this===ec.globalObject?ec.global:this, args:Array.prototype.slice.call(arguments)
-        });
+        var node={args:Array.prototype.slice.call(arguments)};
+        if(opts.withThis) node.This=this===ec.globalObject?ec.global:this;
+        theControl.calls.push(onlyArgs?node.args:node);
         return theOldFunction.apply(this,arguments);
     };
     var parameterList=[];
     for(var i=0; i<theOldFunction.length; i++){
         parameterList.push('x'+i);
     }
-    var functionExpresion="(function "+functionName+
+    var functionExpresion="(function "+theOldFunction.name+
         "("+parameterList.join(',')+")"+
         "{ return theControledFunction0.apply(this,arguments); })";
     var theControledFunction=eval(functionExpresion);

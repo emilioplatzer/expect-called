@@ -61,10 +61,10 @@ describe('this test',function(){
     var camelPhrase = myModule.cammel(phrase);
     expect(camelPhrase).to.eql('ThisIsMyCamel');
     expect(control.calls).to.eql([
-        {This:myModule, args:['this']},
-        {This:myModule, args:['is']},
-        {This:myModule, args:['my']},
-        {This:myModule, args:['camel']}
+        ['this'],
+        ['is'],
+        ['my'],
+        ['camel']
     ]);
     control.stopControl();
   });
