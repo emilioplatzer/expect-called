@@ -50,14 +50,14 @@ describe('expect-called', function(){
             ]);
             var expected={
                 calls: [{This: expectCalled.global, args: [x,y]}],
-                This: expectCalled.global,
+                container: expectCalled.global,
                 functionName: 'globalFunction',
                 originalFunction: theOriginalGlobalFunction,
                 stopControl: expectCalled.stopControl
             };
             /*
             expect(control.calls).to.eql(expected.calls);
-            expect(control.This).to.eql(expected.This);
+            expect(control.container).to.eql(expected.container);
             expect(control.functionName).to.eql(expected.functionName);
             expect(control.originalFunction).to.eql(expected.originalFunction);
             expect(control.stopControl).to.eql(expected.stopControl);
@@ -81,7 +81,7 @@ describe('expect-called', function(){
             expect(returned).to.eql(8);
             var expected={
                 calls: [{This: localObject, args: [7]}],
-                This: localObject,
+                container: localObject,
                 functionName: 'member',
                 originalFunction: originalFunction,
                 stopControl: expectCalled.stopControl
@@ -116,8 +116,28 @@ describe('expect-called', function(){
             localObject.memberFunction(3,4,5);
             var expected={
                 calls: [[7],[3,4,5]],
-                This: localObject,
+                container: localObject,
                 functionName: 'memberFunction',
+                originalFunction: originalFunction,
+                stopControl: expectCalled.stopControl
+            };
+            expect(control).to.eql(expected);
+            control.stopControl();
+        });
+    });
+    describe('prototype functions', function(){
+        it('should control directly in de prototype',function(){
+            function TheClass(){
+            };
+            TheClass.prototype.duplicate=function(t){ return t+','+t; }
+            var originalFunction=TheClass.prototype.duplicate;
+            var control=expectCalled.control(TheClass.prototype,'duplicate',{withThis:true});
+            var o=new TheClass();
+            var ret=o.duplicate('a');
+            var expected={
+                calls: [{This: o, args:['a']}],
+                container: TheClass.prototype,
+                functionName: 'duplicate',
                 originalFunction: originalFunction,
                 stopControl: expectCalled.stopControl
             };

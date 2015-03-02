@@ -24,7 +24,7 @@ ec.control = function control(object, functionName, opts){
     var theOldFunction = object[functionName];
     var theControl = {
         calls: [],
-        This: object===this.globalObject?this.global:object,
+        container: object===this.globalObject?this.global:object,
         functionName: functionName,
         originalFunction: theOldFunction,
         stopControl: this.stopControl
@@ -48,7 +48,7 @@ ec.control = function control(object, functionName, opts){
 };
 
 ec.stopControl = function stopControl(){
-    (this.This===ec.global?ec.globalObject:this.This)[this.functionName]=this.originalFunction;
+    (this.container===ec.global?ec.globalObject:this.container)[this.functionName]=this.originalFunction;
 };
  
 exports = module.exports = ec;
