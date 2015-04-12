@@ -25,7 +25,7 @@ and then calls de original function and returns the returned value.
 Returns a control object
 
 opts     | type    | use for
----------|--------------
+---------|---------|-----
 withThis | boolean | register *this* object in calls
 returns  | Array   | create a mock function that returns each of the elements in the list one by one
 
@@ -78,7 +78,7 @@ describe('this test',function(){
 
 ## Notes
  * Not usefull for local functions that do not belong to a object
- * Not control de returned value
+ * Not control de returned value but could specify the returned values (like a mock function)
  * Call to control with the same function name twice without stopping the previous control could generate unexpected results. 
 
 ## License
