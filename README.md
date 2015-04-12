@@ -16,13 +16,18 @@ $ npm install expect-called
 
 ## API
 
-### expectedCalled.control(object, functionName)
+### expectedCalled.control(object, functionName, [opts])
 
 Creates a function wrapper for object[functionName], 
 the wrapper function will register de parameters used to call the function (included *this*) 
 and then calls de original function and returns the returned value.
 
 Returns a control object
+
+opts     | type    | use for
+---------|--------------
+withThis | boolean | register *this* object in calls
+returns  | Array   | create a mock function that returns each of the elements in the list one by one
 
 ### control.call
 

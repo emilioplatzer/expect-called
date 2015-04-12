@@ -93,6 +93,37 @@ describe('expect-called', function(){
             // control remains unchanged
             expect(control).to.eql(expected);
         });
+        it('should return mock data', function(){
+            var localObject={
+                member:function(x){ throw new Error('this may not be called'); } 
+            }
+            var otherObject={
+                other:'other'
+            }
+            var originalFunction=localObject.member;
+            var control=expectCalled.control(localObject,'member',{withThis:true, returns:['first', 'second']});
+            var returned;
+            expect(localObject.member(7)).to.eql('first');
+            expect(localObject.member.call(otherObject,8,1)).to.eql('second');
+            expect(function(){
+                localObject.member(9)
+            }).to.throwError(/no more returns defined/);
+            var expected={
+                calls: [
+                    {This: localObject, args: [7]}, 
+                    {This: otherObject, args: [8,1]},
+                    {This: localObject, args: [9]}
+                ],
+                container: localObject,
+                functionName: 'member',
+                originalFunction: originalFunction,
+                remainReturns: [],
+                stopControl: expectCalled.stopControl
+            };
+            expect(control).to.eql(expected);
+            control.stopControl();
+            expect(localObject.member).to.be(originalFunction);
+        });
         it('should not change the function arity', function(){
             var initialArity=localObject.memberFunction.length;
             var control=expectCalled.control(localObject,'memberFunction');

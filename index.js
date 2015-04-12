@@ -29,12 +29,22 @@ ec.control = function control(object, functionName, opts){
         originalFunction: theOldFunction,
         stopControl: this.stopControl
     };
+    var theCalledFunction=theOldFunction;
+    if('returns' in opts){
+        theControl.remainReturns = opts.returns;
+        theCalledFunction=function(){
+            if(!opts.returns.length){
+                throw new Error('ExpectCalled.control no more returns defined for '+functionName);
+            }
+            return opts.returns.shift();
+        }
+    }
     var theControledFunction0 = function(){
         var node={};
         if(opts.withThis) node.This=this===ec.globalObject?ec.global:this;
         node.args=Array.prototype.slice.call(arguments);
         theControl.calls.push(onlyArgs?node.args:node);
-        return theOldFunction.apply(this,arguments);
+        return theCalledFunction.apply(this,arguments);
     };
     var parameterList=[];
     for(var i=0; i<theOldFunction.length; i++){
