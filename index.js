@@ -42,6 +42,15 @@ ec.control = function control(object, functionName, opts){
             return opts.returns.shift();
         }
     }
+    if('mocks' in opts){
+        theControl.mocksReturns = opts.mocks;
+        theCalledFunction=function(){
+            if(!opts.mocks.length){
+                throw new Error('ExpectCalled.control no more mocks defined for '+functionName);
+            }
+            return opts.mocks.shift().apply(this,arguments);
+        }
+    }
     var theControledFunction0 = function(){
         var node={};
         if(opts.withThis) node.This=this===ec.globalObject?ec.global:this;

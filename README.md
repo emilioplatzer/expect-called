@@ -28,6 +28,7 @@ opts     | type    | use for
 ---------|---------|-----
 withThis | boolean | register *this* object in calls
 returns  | Array   | create a mock function that returns each of the elements in the list one by one
+mocks    | Array of function | funcions to call instead original function. Each element of the array is called in each call with the same parámeters and returning the corresponding returned value
 
 ### control.call
 

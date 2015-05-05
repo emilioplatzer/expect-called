@@ -124,6 +124,46 @@ describe('expect-called', function(){
             control.stopControl();
             expect(localObject.member).to.be(originalFunction);
         });
+        it('should call mocks function', function(){
+            var localObject={
+                member:function(x){ throw new Error('this may not be called'); } 
+            }
+            var otherObject={
+                other:'other'
+            }
+            var originalFunction=localObject.member;
+            var control=expectCalled.control(localObject,'member',{withThis:true, mocks:[
+                function(data,callback){ callback(null, 'one:'+data); return 7; },
+                function(data,callback){ callback(new Error('example error:'+data)); return 9; },
+            ]});
+            var registeredData={};
+            function register(err, data){
+                registeredData.err=err;
+                registeredData.data=data;
+            };
+            expect(localObject.member(7,register)).to.eql(7);
+            expect(registeredData).to.eql({err:null, data:'one:7'});
+            expect(localObject.member.call(otherObject,8,register)).to.eql(9);
+            expect(registeredData).to.eql({err:new Error('example error:8'), data:undefined});
+            expect(function(){
+                localObject.member(9, register)
+            }).to.throwError(/no more mocks defined/);
+            var expected={
+                calls: [
+                    {This: localObject, args: [7, register]}, 
+                    {This: otherObject, args: [8, register]},
+                    {This: localObject, args: [9, register]}
+                ],
+                container: localObject,
+                functionName: 'member',
+                originalFunction: originalFunction,
+                mocksReturns: [],
+                stopControl: expectCalled.stopControl
+            };
+            expect(control).to.eql(expected);
+            control.stopControl();
+            expect(localObject.member).to.be(originalFunction);
+        });
         it('should not change the function arity', function(){
             var initialArity=localObject.memberFunction.length;
             var control=expectCalled.control(localObject,'memberFunction');
